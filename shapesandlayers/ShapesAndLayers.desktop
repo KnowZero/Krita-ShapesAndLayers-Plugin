@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Krita/PythonPlugin
+X-KDE-Library=ShapesAndLayers
+X-Python-2-Compatible=false
+X-Krita-Manual=Manual.html
+Name=Shapes And Layers
+Comment=This plugin includes a collection of tools to manipulate vector layers and shapes. (Requires Krita 5.0+)
