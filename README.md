@@ -11,5 +11,5 @@ You can also choose the depth you wish it to traverse by changing the top-level 
 ### Adjust Font Sizes
 ```Usage: Tools->Shapes And Layers->Adjust Font Sizes...```
 
-Finds all text shapes within a document and adjusts them according to the operation chosen. This will also adjust text within the group layers
+Finds all text shapes within a document and adjusts them according to the operation chosen. This will also adjust text sizes within group shapes
 The default 0.75 division is for restoring the font sizes to the Krita 4 sizes 
