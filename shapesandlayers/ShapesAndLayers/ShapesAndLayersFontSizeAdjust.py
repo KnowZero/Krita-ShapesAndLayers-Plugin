@@ -90,8 +90,10 @@ class ShapesAndLayersFontSizeAdjust(QtWidgets.QDialog):
                                 subnode.setAttribute('font-size', str(self.fontResize( adjustOp, adjustAmount, float(subnode.getAttribute('font-size')) )) )
                     
                     shape.remove()
-                    currentLayer.addShapesFromSvg(svgDom.toxml())
-                    item.setForeground( doneColor )
+                    shapes = currentLayer.addShapesFromSvg(svgDom.toxml())
+                    if shapes[0]:
+                        self.shapeListData[i]['shape'] = shapes[0]
+                        item.setForeground( doneColor )
 
         self.activeProcess = False
         self.btnFontAdjustRunProcess.setText('Start')
