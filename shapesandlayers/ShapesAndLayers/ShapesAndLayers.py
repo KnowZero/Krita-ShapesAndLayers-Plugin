@@ -1,26 +1,33 @@
 from krita import *
 from .ShapesAndLayersSplit import *
 from .ShapesAndLayersFontSizeAdjust import *
+from .ShapesAndLayersVisibilityHelper import *
+from .ShapesAndLayersLayerStylesClipboard import *
 
 class ShapesAndLayers(Extension):
     def __init__(self, parent):
         super().__init__(parent) 
+        if int(Krita.instance().version().split(".")[0]) >= 5:
+            self.visibilityHelper = ShapesAndLayersVisibilityHelper(self)
+            self.layerStylesClipboard = ShapesAndLayersLayerStylesClipboard(self)
 
     def setup(self):
         pass
 
     def createActions(self, window):
-        action1 = window.createAction("shapesAndLayersSplitShapesFromLayer", "Split Vector Shapes Into Layers...", "Layer/LayerSplitAlpha")
-        action1.triggered.connect(self.splitLayer)
+        if int(Krita.instance().version().split(".")[0]) >= 5:
+            action1 = window.createAction("shapesAndLayersSplitShapesFromLayer", "Split Vector Shapes Into Layers...", "Layer/LayerSplitAlpha")
+            action1.triggered.connect(self.slotSplitLayer)
         
+            action2 = window.createAction("shapesAndLayers", "Shapes And Layers", "tools/scripts")
+            menu = QtWidgets.QMenu("shapesAndLayers", window.qwindow())
+            action2.setMenu(menu)
         
-        action2 = window.createAction("shapesAndLayers", "Shapes And Layers", "tools/scripts")
-        menu = QtWidgets.QMenu("shapesAndLayers", window.qwindow())
-        action2.setMenu(menu)
-        
-        
-        subaction1 = window.createAction("shapesAndLayersfontAdjust", "Adjust Font Sizes...", "tools/scripts/shapesAndLayers")
-        subaction1.triggered.connect(self.fontAdjust)
+            subaction1 = window.createAction("shapesAndLayersFontAdjust", "Adjust Font Sizes...", "tools/scripts/shapesAndLayers")
+            subaction1.triggered.connect(self.slotFontAdjust)
+
+            self.visibilityHelper.onLoad(window)
+            self.layerStylesClipboard.onLoad(window)
 
     
     def versionCheck(self):
@@ -29,20 +36,25 @@ class ShapesAndLayers(Extension):
             return False
         return True
     
-    def splitLayer(self):
+    def slotSplitLayer(self):
         if not self.versionCheck(): return
         sl = ShapesAndLayersSplit(self)
         
         result = sl.openDialog()
-        if 'error' in result: QtWidgets.QMessageBox.warning(Krita.instance().activeWindow().qwindow(), "Error", result['error'])
+        self.errMsg(result)
 
-    def fontAdjust(self):
+    def slotFontAdjust(self):
         if not self.versionCheck(): return
-        sl = ShapesAndLayersFontSizeAdjust(self)
+        fsa = ShapesAndLayersFontSizeAdjust(self)
         
-        result = sl.openDialog()
-        if 'error' in result: QtWidgets.QMessageBox.warning(Krita.instance().activeWindow().qwindow(), "Error", result['error'])
+        result = fsa.openDialog()
+        self.errCheck(result)
 
+
+        
+    def errCheck(self, result):
+        if 'error' in result:
+            QtWidgets.QMessageBox.warning(Krita.instance().activeWindow().qwindow(), "Error", result['error'])
 
 # And add the extension to Krita's list of extensions:
 app = Krita.instance()
