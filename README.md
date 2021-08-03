@@ -12,4 +12,18 @@ You can also choose the depth you wish it to traverse by changing the top-level 
 ```Usage: Tools->Shapes And Layers->Adjust Font Sizes...```
 
 Finds all text shapes within a document and adjusts them according to the operation chosen. This will also adjust text sizes within group shapes
-The default 0.75 division is for restoring the font sizes to the Krita 4 sizes 
+The default 0.75 division is for restoring the font sizes to the Krita 4 sizes
+
+### Visibility Helper
+```Usage:  Tools->Shapes And Layers->Layer Visibility Helper...```
+
+<p>Provides convenience features for handling invisible layers.</p>
+<p><strong>Auto-select layer on making layer visible:</strong> When layer is made visible, select that layer</p>
+<p><strong>Block invisible layers:</strong> Make invisible layers more noticable for those who get tunnel visioned</p>
+<p><strong>Toggle visibility drag:</strong> Drag down or up to make multiple layers visible or invisible</p>
+
+### Layer Styles Clipboard
+```Usage:  Layer->Layer Styles Clipboard```
+
+Provides ability to copy, cut, paste and clear layer styles.
+Shortcuts Available for configuration in Krita's shortcut manager
