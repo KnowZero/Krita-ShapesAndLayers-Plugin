@@ -3,6 +3,7 @@ from .ShapesAndLayersSplit import *
 from .ShapesAndLayersFontSizeAdjust import *
 from .ShapesAndLayersVisibilityHelper import *
 from .ShapesAndLayersLayerStylesClipboard import *
+from .ShapesAndLayersHideDockWindowTitlebar import *
 
 class ShapesAndLayers(Extension):
     def __init__(self, parent):
@@ -10,6 +11,7 @@ class ShapesAndLayers(Extension):
         if int(Krita.instance().version().split(".")[0]) >= 5:
             self.visibilityHelper = ShapesAndLayersVisibilityHelper(self)
             self.layerStylesClipboard = ShapesAndLayersLayerStylesClipboard(self)
+            self.hideDockWindowTitlebar = ShapesAndLayersHideDockWindowTitlebar(self)
 
     def setup(self):
         pass
@@ -28,6 +30,7 @@ class ShapesAndLayers(Extension):
 
             self.visibilityHelper.onLoad(window)
             self.layerStylesClipboard.onLoad(window)
+            self.hideDockWindowTitlebar.onLoad(window)
 
     
     def versionCheck(self):

@@ -1,19 +1,19 @@
 from krita import *
-from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
-import re
-from xml.dom import minidom
+from PyQt5 import QtWidgets
 
 class ShapesAndLayersLayerStylesClipboard():
     def __init__(self, caller, parent = None):
         super().__init__()
       
-        settingsList = Krita.instance().readSetting("", "shapesandlayersCopyLayerStyles","").split(',')
+        settingsList = Krita.instance().readSetting("", "shapesandlayersLayerStylesClipboard","").split(',')
         self.settings = { 'enabled': True } if len(settingsList) < 2 else { settingsList[i]: int(settingsList[i + 1]) for i in range(0, len(settingsList), 2) }  
         
         self.layerStyleClipboard = None
         self.layerStyleRemove = None
         
         self.pasteAction = None
+        
+        self.subActions = {}
         
 
     def onLoad(self, window):
@@ -28,19 +28,29 @@ class ShapesAndLayersLayerStylesClipboard():
         #qwin = Krita.instance().activeWindow().qwindow()
         box = qwin.findChild(QtWidgets.QDockWidget, "KisLayerBox")
 
-        action = window.createAction("shapesAndLayersStyles", "Layer Style Clipboard", "Layer")
-        menu = QtWidgets.QMenu("shapesAndLayersStyles", window.qwindow())
+        action = window.createAction("shapesandlayersLayerStylesClipboard", "Layer Style Clipboard", "Layer")
+        menu = QtWidgets.QMenu("shapesAndLayersLayerStyles", window.qwindow())
         action.setMenu(menu)
         
-        subaction1 = window.createAction("shapesAndLayersCopyLayerStyle", "Copy Layer Style", "Layer/shapesAndLayersStyles")
-        subaction1.triggered.connect(self.copyLayerStyle)
-        self.pasteAction = window.createAction("shapesAndLayersPasteLayerStyle", "Paste Layer Style", "Layer/shapesAndLayersStyles")
-        self.pasteAction.triggered.connect(self.pasteLayerStyle)
-        subaction3 = window.createAction("shapesAndLayersCutLayerStyle", "Cut Layer Style", "Layer/shapesAndLayersStyles")
-        subaction3.triggered.connect(self.cutLayerStyle)
-        subaction4 = window.createAction("shapesAndLayersClearLayerStyle", "Clear Layer Style", "Layer/shapesAndLayersStyles")
-        subaction4.triggered.connect(self.clearLayerStyle)
+        
+        self.subActions['copy'] = window.createAction("shapesAndLayersCopyLayerStyle", "Copy Layer Style", "Layer/shapesandlayersLayerStylesClipboard")
+        self.subActions['copy'].triggered.connect(self.copyLayerStyle)
+        self.subActions['paste'] = window.createAction("shapesAndLayersPasteLayerStyle", "Paste Layer Style", "Layer/shapesandlayersLayerStylesClipboard")
+        self.subActions['paste'].triggered.connect(self.pasteLayerStyle)
+        self.subActions['cut'] = window.createAction("shapesAndLayersCutLayerStyle", "Cut Layer Style", "Layer/shapesandlayersLayerStylesClipboard")
+        self.subActions['cut'].triggered.connect(self.cutLayerStyle)
+        self.subActions['clear'] = window.createAction("shapesAndLayersClearLayerStyle", "Clear Layer Style", "Layer/shapesandlayersLayerStylesClipboard")
+        self.subActions['clear'].triggered.connect(self.clearLayerStyle)
+        
+        action.hovered.connect(self.checkActiveLayer)
 
+    def checkActiveLayer(self):
+        if not self.subActions['copy'].isEnabled():
+            if Krita.instance().activeDocument().activeNode().type().endswith('layer'):
+                self.subActions['copy'].setEnabled(True)
+                self.subActions['paste'].setEnabled(True)
+                self.subActions['cut'].setEnabled(True)
+                self.subActions['clear'].setEnabled(True)
 
     def cutLayerStyle(self):
         doc = Krita.instance().activeDocument()
@@ -48,14 +58,14 @@ class ShapesAndLayersLayerStylesClipboard():
         
         self.layerStyleClipboard = node.layerStyleToAsl()
         self.layerStyleRemove = node
-        self.pasteAction.setText("Paste Layer Style ["+node.name()+"]")
+        self.subActions['paste'].setText("Paste Layer Style ["+node.name()+"]")
     
     def copyLayerStyle(self):
         doc = Krita.instance().activeDocument()
         node = doc.activeNode()
         
         self.layerStyleClipboard = node.layerStyleToAsl()
-        self.pasteAction.setText("Paste Layer Style ["+node.name()+"]")
+        self.subActions['paste'].setText("Paste Layer Style ["+node.name()+"]")
 
     def pasteLayerStyle(self):
         doc = Krita.instance().activeDocument()

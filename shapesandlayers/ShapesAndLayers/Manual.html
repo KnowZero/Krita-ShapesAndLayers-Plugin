@@ -6,30 +6,37 @@
 <head><title>Shapes and Layers</title>
 </head>
 <body>
-<h3>Shapes and Layers</h3>
-This plugin includes a collection of tools to manipulate vector layers and shapes. (Requires Krita 5.0+)
+<h2>Shapes and Layers</h2>
+<h4>v.0.04</h4>
+This plugin includes a collection of tools to manipulate layers, shapes and other convenience tools. (Requires Krita 5.0+)
 
-<h3>Features</h3>
-<h5><u>Split Shapes Into Layers</u></h5>
+<h2>Features</h2>
+<h4><u>Split Shapes Into Layers</u></h4>
 <p><code>Usage: Layer->Split->Split Vector Shapes Into Layers...</code></p>
 <p>Finds all shapes inside a vector layer and splits each shape into its own layer. Group shapes will be made into group layers, and shapes will be made into either their own vector layer or their own paint/raster layer depending on the option chosen.</p>
 <p>You can also choose the depth you wish it to traverse by changing the top-level group depth option. By default, the top-level group setting is set to be equal to the top most non-group shape it finds.</p>
 
-<h5><u>Adjust Font Sizes</u></h5>
-<p><code>Usage: Tools->Shapes And Layers->Adjust Font Sizes...</code></p>
+<h4><u>Adjust Font Sizes</u></h4>
+<p><code>Usage: Tools->Scripts->Shapes And Layers->Adjust Font Sizes...</code></p>
 <p>Finds all text shapes within a document and adjusts them according to the operation chosen. This will also adjust text within group shapes.</p>
 <p>The default 0.75 division is for restoring the font sizes to the Krita 4 sizes</p>
 
-<h5><u>Visibility Helper</u></h5>
-<p><code>Usage: Tools->Shapes And Layers->Layer Visibility Helper...</code></p>
+<h4><u>Visibility Helper</u></h4>
+<p><code>Usage: Tools->Scripts->Shapes And Layers->Layer Visibility Helper...</code></p>
 <p>Provides convenience features for handling invisible layers.</p>
 <p><strong>Auto-select layer on making layer visible:</strong> When layer is made visible, select that layer</p>
 <p><strong>Block invisible layers:</strong> Make invisible layers more noticable for those who get tunnel visioned</p>
 <p><strong>Toggle visibility drag:</strong> Drag down or up to make multiple layers visible or invisible</p>
 
-<h5><u>Layer Styles Clipboard</u></h5>
+<h4><u>Layer Styles Clipboard</u></h4>
 <p><code>Usage: Layer->Layer Styles Clipboard</code></p>
-<p>Provides ability to copy, cut, paste and clear layer styles.</p>
+<p>Provides the ability to copy, cut, paste and clear layer styles.</p>
 <p>Shortcuts Available for configuration in Krita's shortcut manager</p>
+
+<h4><u>Hide Dock Window Titlebars</u></h4>
+<p><code>Usage: Tools->Scripts->Shapes And Layers->Hide Dock Window Titlebars</code></p>
+<p>Provides the ability to toggle the titlebars of Dock Windows on and off.</p>
+<p>Holding Ctrl + Right mouse click will toggle individual dock windows. (If you click on child object of the window like a listbox, you may have to doubleclick)</p>
+
 </body>
 </html>
