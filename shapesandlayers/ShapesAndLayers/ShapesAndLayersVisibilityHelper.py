@@ -2,6 +2,7 @@ from krita import *
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
 import re
 from xml.dom import minidom
+import sip
 
 class ShapesAndLayersVisibilityHelper():
     def __init__(self, caller, parent = None):
@@ -53,7 +54,7 @@ class ShapesAndLayersVisibilityHelper():
 
     def checkBlockCanvas(self, visible):
         
-        if self.blockCanvas is None:
+        if self.blockCanvas is None or sip.isdeleted(self.blockCanvas):
             self.subWindow = self.mdi.activeSubWindow()
             self.scrollArea = self.subWindow.findChild(QtWidgets.QAbstractScrollArea)
             self.blockCanvas = QtWidgets.QWidget(self.scrollArea)
@@ -71,11 +72,13 @@ class ShapesAndLayersVisibilityHelper():
             self.blockCanvas.gridLayout.addWidget(invisibleLayerBtn)
         
             self.blockCanvas.resize(self.scrollArea.rect().width(),self.scrollArea.rect().height())
-            
+
+
         if visible:
             self.blockCanvas.hide()
         else:
             self.blockCanvas.show()
+
 
 
       
@@ -163,29 +166,39 @@ class ShapesAndLayersVisibilityHelper():
 
     
     def layerDataChanged(self, idx, idx2, urole = []):
-        if not self.clickEvent: return
+        
     
         doc = Krita.instance().activeDocument()
+        
+        if doc is None: return
+
+
         node = doc.activeNode()
         
         if (doc.fileName() != self.docName):
             self.docName = doc.fileName()
             self.layerChanges = {}
+            if self.blockCanvas is not None and not sip.isdeleted(self.blockCanvas): 
+                self.blockCanvas.deleteLater()
         
         layerName = idx.data(0)
         layerVisible = not idx.data( Qt.UserRole + 6 )
-        
+
+       
         if self.settings['boolToggleVisibilityDrag'] and self.clickEvent and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is not layerVisible:
             self.hoverToggleNodes = []
             self.hoverToggleMode = [True, layerVisible]
         
-       
         if self.settings['boolAutoSelectVisibleLayer'] and self.clickEvent and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is False and layerVisible is True:
             doc.setActiveNode( self.validateNode(doc.nodeByName(layerName),idx) )
+
 
         if self.settings['boolBlockInvisibileLayer'] and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is not layerVisible:
             if idx.data( Qt.UserRole + 1 ):
                 self.checkBlockCanvas(layerVisible)
+
+
+
 
         self.layerChanges[layerName] = { 'visible': layerVisible }
         
@@ -202,7 +215,7 @@ class ShapesAndLayersVisibilityHelper():
         doc = Krita.instance().activeDocument()
         node = doc.activeNode()        
 
-        if self.currentLayer is None or self.currentLayer != node.uniqueId():
+        if node is not None and (self.currentLayer is None or self.currentLayer != node.uniqueId()):
             self.currentLayer = node.uniqueId()
             if self.settings['boolBlockInvisibileLayer']:
                 self.checkBlockCanvas(node.visible())
