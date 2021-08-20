@@ -129,7 +129,7 @@ class ShapesAndLayersVisibilityHelper():
         
         return idxMap
     
-    def validateNode(self, doc, node, idx):
+    def validateNode(self, doc,layerName, node, idx):
         idxMap = []
             
         self.layerMap(idx, idxMap)
@@ -159,7 +159,7 @@ class ShapesAndLayersVisibilityHelper():
             layerName = idx.data(0)
             doc = Krita.instance().activeDocument()
             
-            node = self.validateNode(doc, doc.nodeByName(layerName),idx)
+            node = self.validateNode(doc,layerName, doc.nodeByName(layerName),idx)
 
             node.setVisible(self.hoverToggleMode[1])
             #>self.hoverToggleNodes.append([node])
@@ -190,7 +190,7 @@ class ShapesAndLayersVisibilityHelper():
             self.hoverToggleMode = [True, layerVisible]
         
         if self.settings['boolAutoSelectVisibleLayer'] and self.clickEvent and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is False and layerVisible is True:
-            doc.setActiveNode( self.validateNode(doc, doc.nodeByName(layerName),idx) )
+            doc.setActiveNode( self.validateNode(doc,layerName, doc.nodeByName(layerName),idx) )
 
 
         if self.settings['boolBlockInvisibileLayer'] and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is not layerVisible:
