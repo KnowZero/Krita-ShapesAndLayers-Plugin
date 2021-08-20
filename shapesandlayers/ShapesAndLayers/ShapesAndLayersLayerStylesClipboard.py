@@ -68,10 +68,11 @@ class ShapesAndLayersLayerStylesClipboard():
         self.subActions['paste'].setText("Paste Layer Style ["+node.name()+"]")
 
     def pasteLayerStyle(self):
-        doc = Krita.instance().activeDocument()
-        node = doc.activeNode()
+        win = Krita.instance().activeWindow()
+        view = win.activeView()
         
-        node.setLayerStyleFromAsl(self.layerStyleClipboard)
+        for node in view.selectedNodes():
+            node.setLayerStyleFromAsl(self.layerStyleClipboard)
         
         if self.layerStyleRemove is not None:
             self.layerStyleRemove.setLayerStyleFromAsl('<asl><node type="Descriptor" name="" classId="null"></node></asl>')
