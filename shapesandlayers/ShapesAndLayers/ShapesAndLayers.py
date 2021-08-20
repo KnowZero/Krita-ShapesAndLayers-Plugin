@@ -44,7 +44,7 @@ class ShapesAndLayers(Extension):
         sl = ShapesAndLayersSplit(self)
         
         result = sl.openDialog()
-        self.errMsg(result)
+        self.errCheck(result)
 
     def slotFontAdjust(self):
         if not self.versionCheck(): return
