@@ -53,6 +53,7 @@ class ShapesAndLayersFontSizeAdjust(QtWidgets.QDialog):
         elif adjustOp == 1: return orgSize / adjustAmount
         elif adjustOp == 2: return orgSize * adjustAmount
         elif adjustOp == 3 and orgSize > adjustAmount: return orgSize - adjustAmount
+        elif adjustOp == 4: return adjustAmount
         else: return orgSize
     
                 

@@ -40,7 +40,8 @@
       <string>Start</string>
      </property>
      <property name="icon">
-      <iconset theme="media-playback-start"/>
+      <iconset theme="media-playback-start">
+       <normaloff>.</normaloff>.</iconset>
      </property>
     </widget>
    </item>
@@ -56,14 +57,15 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset theme="select-all"/>
+      <iconset theme="select-all">
+       <normaloff>.</normaloff>.</iconset>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
     <widget class="QComboBox" name="cmbFontAdjustOperator">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <item>
       <property name="text">
@@ -83,6 +85,11 @@
      <item>
       <property name="text">
        <string>Subtracting</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Setting exactly to</string>
       </property>
      </item>
     </widget>
