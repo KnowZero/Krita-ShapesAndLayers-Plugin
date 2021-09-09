@@ -264,7 +264,7 @@ class ShapesAndLayersVisibilityHelper():
                 
                 self.caller.hoverToggleMode = [False, False]
                 self.caller.clickEvent = False
-                if self.layerList.dragEnabled is False: self.layerList.setDragEnabled(False)
+                if self.caller.layerList.dragEnabled is False: self.caller.layerList.setDragEnabled(True)
                 
                 #print ("RELEASE")
             return False
