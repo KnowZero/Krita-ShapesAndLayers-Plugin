@@ -188,6 +188,7 @@ class ShapesAndLayersVisibilityHelper():
         if self.settings['boolToggleVisibilityDrag'] and self.clickEvent and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is not layerVisible:
             self.hoverToggleNodes = []
             self.hoverToggleMode = [True, layerVisible]
+            self.layerList.setDragEnabled(False)
         
         if self.settings['boolAutoSelectVisibleLayer'] and self.clickEvent and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is False and layerVisible is True:
             doc.setActiveNode( self.validateNode(doc,layerName, doc.nodeByName(layerName),idx) )
@@ -263,6 +264,7 @@ class ShapesAndLayersVisibilityHelper():
                 
                 self.caller.hoverToggleMode = [False, False]
                 self.caller.clickEvent = False
+                if self.layerList.dragEnabled is False: self.layerList.setDragEnabled(False)
                 
                 #print ("RELEASE")
             return False
