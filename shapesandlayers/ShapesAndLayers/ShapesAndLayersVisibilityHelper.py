@@ -189,6 +189,8 @@ class ShapesAndLayersVisibilityHelper():
             self.hoverToggleNodes = []
             self.hoverToggleMode = [True, layerVisible]
             self.layerList.setDragEnabled(False)
+            self.layerList.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+
         
         if self.settings['boolAutoSelectVisibleLayer'] and self.clickEvent and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is False and layerVisible is True:
             doc.setActiveNode( self.validateNode(doc,layerName, doc.nodeByName(layerName),idx) )
@@ -265,6 +267,8 @@ class ShapesAndLayersVisibilityHelper():
                 self.caller.hoverToggleMode = [False, False]
                 self.caller.clickEvent = False
                 if self.caller.layerList.dragEnabled() is False: self.caller.layerList.setDragEnabled(True)
+                if self.caller.layerList.selectionMode() == QtWidgets.QAbstractItemView.SingleSelection:
+                    self.caller.layerList.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
                 
                 #print ("RELEASE")
             return False
