@@ -30,14 +30,17 @@ class ShapesAndLayersHideDockWindowTitlebar():
         
         if self.action.isChecked():
             for docker in dockers:
-                if docker.titleBarWidget().findChild(QHBoxLayout) is None:
-                    docker.titleBarWidget().setVisible(False)
+                titlebar = docker.titleBarWidget()
+                if titlebar is not None and titlebar.findChild(QHBoxLayout) is None:
+                    titlebar.setVisible(False)
                 self.dockerList[id(docker)]={ 'func': functools.partial(self.toggleVisibility, docker),'policy': docker.contextMenuPolicy() }
                 docker.setContextMenuPolicy(3)
                 docker.customContextMenuRequested.connect(self.dockerList[id(docker)]['func'])
         else:
             for docker in dockers:
-                docker.titleBarWidget().setVisible(True)
+                titlebar = docker.titleBarWidget()
+                if titlebar is not None:
+                    docker.titleBarWidget().setVisible(True)
                 docker.setContextMenuPolicy(self.dockerList[id(docker)]['policy'])
                 docker.customContextMenuRequested.disconnect(self.dockerList[id(docker)]['func'])           
                 
