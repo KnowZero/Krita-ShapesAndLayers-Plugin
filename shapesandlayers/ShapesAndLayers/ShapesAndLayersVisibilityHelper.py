@@ -40,7 +40,17 @@ class ShapesAndLayersVisibilityHelper():
         if self.settings['boolAutoSelectVisibleLayer'] or self.settings['boolBlockInvisibileLayer'] or self.settings['boolToggleVisibilityDrag']:
                 self.bindLayerList(qwin)
                 
-        self.mdi = qwin.centralWidget().findChild(QtWidgets.QMdiArea)
+        centralWidget = qwin.centralWidget()
+        if centralWidget is not None:
+            self.mdi = centralWidget.findChild(QtWidgets.QMdiArea)
+        else:
+            for win in QtWidgets.QApplication.topLevelWidgets():
+                winName = win.objectName()
+                if winName.startswith('MainWindow'):
+                    mdi = win.findChild(QtWidgets.QMdiArea)
+                    if mdi:
+                        self.mdi = mdi
+                        break
         
 
         
