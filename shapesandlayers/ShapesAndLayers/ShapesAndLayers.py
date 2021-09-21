@@ -4,6 +4,8 @@ from .ShapesAndLayersFontSizeAdjust import *
 from .ShapesAndLayersVisibilityHelper import *
 from .ShapesAndLayersLayerStylesClipboard import *
 from .ShapesAndLayersHideDockWindowTitlebar import *
+from .ShapesAndLayersFontManagerHelper import *
+from .ShapesAndLayersShowEraser import *
 
 class ShapesAndLayers(Extension):
     def __init__(self, parent):
@@ -12,6 +14,8 @@ class ShapesAndLayers(Extension):
             self.visibilityHelper = ShapesAndLayersVisibilityHelper(self)
             self.layerStylesClipboard = ShapesAndLayersLayerStylesClipboard(self)
             self.hideDockWindowTitlebar = ShapesAndLayersHideDockWindowTitlebar(self)
+            self.fontManagerHelper = ShapesAndLayersFontManagerHelper(self)
+            self.showEraser = ShapesAndLayersShowEraser(self)
 
     def setup(self):
         pass
@@ -31,6 +35,8 @@ class ShapesAndLayers(Extension):
             self.visibilityHelper.onLoad(window)
             self.layerStylesClipboard.onLoad(window)
             self.hideDockWindowTitlebar.onLoad(window)
+            self.fontManagerHelper.onLoad(window)
+            self.showEraser.onLoad(window)
 
     
     def versionCheck(self):
