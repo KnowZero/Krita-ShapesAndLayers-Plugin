@@ -78,7 +78,7 @@ class ShapesAndLayersShowEraser():
                 
         else:
             Krita.instance().action('erase_action').toggled.disconnect(self.toggleBindEraser)
-            self.toolBoxWidget.removeEventFilter(self.toolChangeFilter)
+            self.toggleBindEraser(False)
 
             
     def toggleBindEraser(self, status, source = 0):
