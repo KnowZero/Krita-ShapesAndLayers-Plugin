@@ -17,6 +17,7 @@ class ShapesAndLayersShowEraser():
         
     def onLoad(self, window):
         qwin = window.qwindow()
+        self.mdiFilter = self.mdiFilterClass(self)
         self.action = window.createAction("shapesAndLayersShowEraser", "Show Eraser Cursor", "tools/scripts/shapesAndLayers")
         self.action.setCheckable(True)
         self.action.toggled.connect(self.toggleShowEraser)
@@ -87,7 +88,6 @@ class ShapesAndLayersShowEraser():
         
         if status is True:
             #print ("BIND ERASER!", source)
-            self.mdiFilter = self.mdiFilterClass(self)
             self.mdi.viewport().installEventFilter(self.mdiFilter)
             if source == 0:
                 self.toolBoxWidget.installEventFilter(self.toolChangeFilter)
