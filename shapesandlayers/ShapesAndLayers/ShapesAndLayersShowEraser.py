@@ -53,6 +53,7 @@ class ShapesAndLayersShowEraser():
         if status is True:
             
             Krita.instance().action('erase_action').toggled.connect(self.toggleBindEraser)
+
             
             for item in Krita.instance().action('erase_action').associatedWidgets():
                 if isinstance(item, QToolButton):
@@ -81,7 +82,8 @@ class ShapesAndLayersShowEraser():
             Krita.instance().action('erase_action').toggled.disconnect(self.toggleBindEraser)
             self.toggleBindEraser(False)
 
-            
+   
+    
     def toggleBindEraser(self, status, source = 0):
         self.eraserStatus=status
         subWindow = self.mdi.currentSubWindow()
@@ -89,11 +91,14 @@ class ShapesAndLayersShowEraser():
         if status is True:
             #print ("BIND ERASER!", source)
             self.mdi.viewport().installEventFilter(self.mdiFilter)
+            QApplication.setOverrideCursor(self.eraserCursor)
             if source == 0:
                 self.toolBoxWidget.installEventFilter(self.toolChangeFilter)
         else:
             #print ("UNBIND ERASER!", source)
             self.mdi.viewport().removeEventFilter(self.mdiFilter)
+            QApplication.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
             if source == 0:
                 self.toolBoxWidget.removeEventFilter(self.toolChangeFilter)
 
