@@ -1,6 +1,6 @@
  
 # Shapes and Layers Krita Plugin
-## v.0.06
+## v.0.07
 This plugin includes a collection of tools to manipulate vector layers and shapes. (Requires Krita 5.0+) 
 
 ## Features
@@ -36,4 +36,17 @@ Shortcuts Available for configuration in Krita's shortcut manager
 
 Provides the ability to toggle the titlebars of Dock Windows on and off.
 Holding Ctrl + Right mouse click will toggle individual dock windows. (If you click on child object of the window like a listbox, you may have to doubleclick)
+
+
+### Font Manager Helper
+```Usage: Tools->Scripts->Shapes And Layers->Font Manager Helper...```
+<p>Provides the ability to add and remove temporary fonts without restarting Krita.</p>
+<p><strong>Manual:</strong> You can add 1 or more fonts that will be added temporarily. Fonts are automatically removed when Krita is restarted.</p>
+<p><strong>Auto:</strong> Monitor a temporary directory for new fonts and add/remove the fonts in realtime. If left running, it will resume next time Krita is opened and add all the fonts in the directory. Subdirectories are <strong>not</strong> supported. This is not intended for monitoring system font folders.</p>
+
+
+### Show Eraser</u></h4>
+```Usage: Tools->Scripts->Shapes And Layers->Show Eraser Cursor```
+
+Changes the cursor into a visible eraser when the eraser is selected.
 
