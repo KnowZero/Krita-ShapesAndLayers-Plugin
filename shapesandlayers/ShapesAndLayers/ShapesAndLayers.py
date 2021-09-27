@@ -6,6 +6,7 @@ from .ShapesAndLayersLayerStylesClipboard import *
 from .ShapesAndLayersHideDockWindowTitlebar import *
 from .ShapesAndLayersFontManagerHelper import *
 from .ShapesAndLayersShowEraser import *
+from .ShapesAndLayersShapesAsLayers import *
 
 class ShapesAndLayers(Extension):
     def __init__(self, parent):
