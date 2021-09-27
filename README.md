@@ -1,6 +1,6 @@
  
 # Shapes and Layers Krita Plugin
-## v.0.07
+## v.0.08
 This plugin includes a collection of tools to manipulate vector layers and shapes. (Requires Krita 5.0+) 
 
 ## Features
@@ -45,8 +45,22 @@ Holding Ctrl + Right mouse click will toggle individual dock windows. (If you cl
 <p><strong>Auto:</strong> Monitor a temporary directory for new fonts and add/remove the fonts in realtime. If left running, it will resume next time Krita is opened and add all the fonts in the directory. Subdirectories are <strong>not</strong> supported. This is not intended for monitoring system font folders.</p>
 
 
-### Show Eraser</u></h4>
+### Show Eraser
 ```Usage: Tools->Scripts->Shapes And Layers->Show Eraser Cursor```
 
 Changes the cursor into a visible eraser when the eraser is selected.
+You can configure custom cursor SVG/PNG and set size with 4 different modes accross 3 different zoom levels.
+
+<p>You can configure custom cursor SVG/PNG and set size with 4 different modes accross 3 different zoom levels.</p>
+<p><strong>Default Size:</strong> Use default cursor.</p>
+<p><strong>Static:</strong> Size of cursor will be exactly the number set.</p>
+<p><strong>Adjust:</strong> Cursor will adjust based on zoom level.</p>
+<p><strong>Hide:</strong> Cursor will be hidden.</p>
+
+
+### Shapes As Layers</u></h4>
+```Usage: Settings->Dockers->Shapes As Layers```
+
+A docker that allows you to see and select shapes on a vector layer as though each shape is its own layer. You can also view the SVG of said shape by pressing the Edit button.
+Note: Shapes will only show when the Shape Select Tool is used.
 
