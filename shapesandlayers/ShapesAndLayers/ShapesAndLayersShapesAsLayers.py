@@ -114,12 +114,12 @@ class shapesAndLayersShapesAsLayers(DockWidget):
             item.setIcon(0, Krita.instance().icon('visible' if not visible else 'novisible' ) )
 
     def layerChangedReset(self):
-        print ("RESET!")
+        #print ("RESET!")
         self.cleanup()
         self.layerChanged()
 
     def layerChanged(self):
-        print ("PRELAYER CHANGED!", self.centralWidget.listShapes.selectedItems() )
+        #print ("PRELAYER CHANGED!", self.centralWidget.listShapes.selectedItems() )
         if self.currentDocument is None:
             self.currentLayer = None
             self.currentLayerUUID = None
@@ -134,7 +134,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         activeNodeUUID = activeNode.uniqueId()
         
         if self.currentLayerUUID != activeNodeUUID:
-            print ("LAYER CHANGED!")
+            #print ("LAYER CHANGED!")
             self.currentLayer = activeNode
             self.currentLayerUUID = activeNodeUUID
             
@@ -150,7 +150,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         self.selectList = {}
         self.centralWidget.listShapes.clear()
         
-        if fill:
+        if fill and self.currentLayer and self.currentLayer.type() == 'vectorlayer':
             self.blockSelect = True
             absoluteTransform = QTransform()
             self.fillShapeList( absoluteTransform, self.currentLayer.shapes(), 1 )
@@ -206,7 +206,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
     def shapeSelectionChanged(self):
         if self.blockSelect is True: return
         if not Krita.instance().action('InteractionTool').isChecked():
-            print ("TRIGGER!")
+            #print ("TRIGGER!")
             Krita.instance().action('InteractionTool').trigger()
         
         for i in self.selectList:
@@ -214,7 +214,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
             
             shape.deselect()
         
-        print ("SHAPE CHANGE:", len(self.selectList), len(self.shapeListData) )
+        #print ("SHAPE CHANGE:", len(self.selectList), len(self.shapeListData) )
         
         self.selectList = {}
         
@@ -229,7 +229,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
                 print ("NOT FOUND SHAPE")
 
     def shapeChanged(self):
-        print ("SHAPE CHANGE!")
+        #print ("SHAPE CHANGE!")
         self.currentDocument.waitForDone()
         QTimer.singleShot(500, self.reloadShapeLayers)
         
