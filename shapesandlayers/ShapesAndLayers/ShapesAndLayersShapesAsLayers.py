@@ -90,7 +90,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
                 Krita.instance().action(action).triggered.connect(self.shapeChanged)
                 self.xSpinBox.installEventFilter(self.xSpinBoxFilter)
 
-            if self.currentLayer.type() == 'vectorlayer':
+            if self.currentLayer is not None and self.currentLayer.type() == 'vectorlayer':
                 self.reloadShapeLayers()
         else:
             for action in self.TOOLACTION_BINDS:
