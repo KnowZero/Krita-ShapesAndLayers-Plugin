@@ -290,8 +290,14 @@ class ShapesAndLayersShowEraser():
                 adjustMode = None
                 if not self.canvasZoomWidget:
                     qwin = Krita.instance().activeWindow().qwindow()
-                    self.canvasZoomWidget = qwin.statusBar().findChild(QCompleter).parent().parent()
-                self.canvasZoomLevel = float(self.canvasZoomWidget.currentText().replace(',','').replace('%',''))
+                    completer = qwin.statusBar().findChild(QCompleter)
+                    if completer:
+                        self.canvasZoomWidget = completer.parent().parent()
+                        
+                if self.canvasZoomWidget:
+                    self.canvasZoomLevel = float(self.canvasZoomWidget.currentText().replace(',','').replace('%',''))
+                else:
+                    self.canvasZoomLevel = 100
                 
                 if self.settings['intLessThan'] > self.canvasZoomLevel:
                     adjustMode = self.settings['lessThanAdjustCmb']
