@@ -1,6 +1,6 @@
  
 # Shapes and Layers Krita Plugin
-## v.0.08
+## v.0.09
 This plugin includes a collection of tools to manipulate vector layers and shapes. (Requires Krita 5.0+) 
 
 ## Features
@@ -58,9 +58,20 @@ You can configure custom cursor SVG/PNG and set size with 4 different modes accr
 <p><strong>Hide:</strong> Cursor will be hidden.</p>
 
 
+### Selection Arrange Docker ###
+```Usage: Settings->Dockers->Selection Arrange Docker```
+
+A docker that allows you to position paint layer nodes relative to rectangle selection
+Note: Changes will not be added to undo history, a convenience undo has been added as a workaround, but it is suggested to save prior to use
+
 ### Shapes As Layers</u></h4>
 ```Usage: Settings->Dockers->Shapes As Layers```
 
 A docker that allows you to see and select shapes on a vector layer as though each shape is its own layer. You can also view the SVG of said shape by pressing the Edit button.
 Note: Shapes will only show when the Shape Select Tool is used.
 
+### Selection Arrange Docker ###
+```Usage: Settings->Dockers->Selection Arrange Docker```
+
+A docker that allows you to position paint layer nodes relative to rectangle selection
+Note: Changes will not be added to undo history, a convenience undo has been added as a workaround, but it is suggested to save prior to use
