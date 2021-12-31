@@ -7,6 +7,7 @@ from .ShapesAndLayersHideDockWindowTitlebar import *
 from .ShapesAndLayersFontManagerHelper import *
 from .ShapesAndLayersShowEraser import *
 from .ShapesAndLayersShapesAsLayers import *
+from .ShapesAndLayersSelectionArrangeDocker import *
 
 class ShapesAndLayers(Extension):
     def __init__(self, parent):
