@@ -1,6 +1,6 @@
 from krita import *
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
-
+from functools import partial
 
 class shapesAndLayersShapesAsLayers(DockWidget):
     TOOLACTION_BINDS = [
@@ -24,11 +24,15 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         self.centralWidget = uic.loadUi(os.path.dirname(os.path.realpath(__file__)) + '/ShapesAsLayers.ui')
         
         self.centralWidget.listShapes.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        
+
+        
         self.centralWidget.setEnabled(False)
         
         self.setWidget(self.centralWidget)
         
-        self.xSpinBoxFilter = self.xSpinBoxFilterClass(self)
+        #self.xSpinBoxFilter = self.xSpinBoxFilterClass(self)
+        self.canvasMouseFilter = self.CanvasMouseFilterClass(self)
         
         self.shapeListData = []
         self.selectList = {}
@@ -71,24 +75,86 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         
         self.centralWidget.editBtn.clicked.connect(self.openEditDialog)
         
+        self._contextMenuShape = QMenu()
+        
+        
+        self._contextMenuGroup = QMenu()
+        
+        self._contextMenuMultiple = QMenu()
+
+        actionList = {
+            'object_ungroup': ['group'],
+            'object_group': ['multiple'],
+            '-sep1':['group','multiple'],
+            'object_order_front':['shape','group','multiple'],
+            'object_order_raise':['shape','group','multiple'],
+            'object_order_lower':['shape','group','multiple'],
+            'object_order_back':['shape','group','multiple'],
+        }
+        
+        for actionName in actionList.keys():
+            if actionName.startswith('-'):
+                if 'shape' in actionList[actionName]: self._contextMenuShape.addSeparator()
+                if 'group' in actionList[actionName]: self._contextMenuGroup.addSeparator()
+                if 'multiple' in actionList[actionName]: self._contextMenuMultiple.addSeparator()
+            else:
+                actionItem = Krita.instance().action(actionName)
+            
+                if 'shape' in actionList[actionName]: 
+                    self._contextMenuShape.addAction( actionItem.icon(), actionItem.text(), partial(self.callAction, actionName) )
+                if 'group' in actionList[actionName]: 
+                    self._contextMenuGroup.addAction( actionItem.icon(), actionItem.text(), partial(self.callAction, actionName) )
+                if 'multiple' in actionList[actionName]: 
+                    self._contextMenuMultiple.addAction( actionItem.icon(), actionItem.text(), partial(self.callAction, actionName) )
+        
+
+        self.centralWidget.listShapes.customContextMenuRequested.connect(self.showContextMenu)
+
         
         toolBox = self.qwin.findChild(QtWidgets.QDockWidget, "ToolBox")
         toolButton = self.qwin.findChild(QtWidgets.QToolButton, "InteractionTool")
         toolButton.toggled.connect(self.toolChanged)
+    
+    def callAction(self, actionName):
+        Krita.instance().action(actionName).trigger()
         
+    def showContextMenu(self, pos):
+        viewport = self.centralWidget.listShapes.viewport()
+        
+        gPos = viewport.mapToGlobal(pos)
+        selectedShapes = []
+
+        for i in self.selectList.keys():
+            if self.shapeListData[int(i)]['depth'] == 1:
+                selectedShapes.append(self.shapeListData[int(i)])
+        
+        if len(selectedShapes) == 1:
+            for item in selectedShapes:
+                shape = item['shape']
+
+                if isinstance(shape, GroupShape):
+
+                    self._contextMenuGroup.exec(gPos)
+                else:
+                    self._contextMenuShape.exec(gPos)
+        elif len(selectedShapes) > 1:
+            self._contextMenuMultiple.exec(gPos)
+        
+    
     def toolChanged(self, status):
         if Krita.instance().activeDocument() is None:
             self.cleanup()
             return
-        print ("BIND SHAPE", status)
+        #print ("BIND SHAPE", status)
         
         geoWidget = self.qwin.findChild(QWidget,'DefaultToolGeometryWidget')
-        self.xSpinBox = geoWidget.findChild(QDoubleSpinBox, 'positionXSpinBox')
+        #self.xSpinBox = geoWidget.findChild(QDoubleSpinBox, 'positionXSpinBox')
         
         if status is True:
             for action in self.TOOLACTION_BINDS:
                 Krita.instance().action(action).triggered.connect(self.shapeChanged)
-                self.xSpinBox.installEventFilter(self.xSpinBoxFilter)
+            #self.xSpinBox.installEventFilter(self.xSpinBoxFilter)
+            qApp.installEventFilter(self.canvasMouseFilter)
 
             if self.currentLayer is not None and self.currentLayer.type() == 'vectorlayer':
                 self.reloadShapeLayers()
@@ -96,7 +162,8 @@ class shapesAndLayersShapesAsLayers(DockWidget):
             for action in self.TOOLACTION_BINDS:
                 Krita.instance().action(action).triggered.disconnect(self.shapeChanged)
                 
-            self.xSpinBox.removeEventFilter(self.xSpinBoxFilter)
+            #self.xSpinBox.removeEventFilter(self.xSpinBoxFilter)
+            qApp.removeEventFilter(self.canvasMouseFilter)
 
         self.editMode = status
         self.centralWidget.setEnabled(status)
@@ -272,7 +339,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
     def canvasChanged(self, canvas):
         pass
 
-
+    '''
     class xSpinBoxFilterClass(QDoubleSpinBox):
         def __init__(self, caller, parent=None):
             super().__init__()
@@ -282,6 +349,19 @@ class shapesAndLayersShapesAsLayers(DockWidget):
             if event.type() == 98:
                 #print ("Event", event.type(), obj)
                 self.caller.shapeChanged()
+                
+            return False
+    '''
+
+    class CanvasMouseFilterClass(QObject):
+        def __init__(self, caller, parent=None):
+            super().__init__(parent)
+            self.caller = caller
+            
+        def eventFilter(self, obj, event):
+            if isinstance(obj,QOpenGLWidget):
+                if event.type() == QEvent.MouseButtonRelease:
+                    self.caller.shapeChanged()
                 
             return False
 
