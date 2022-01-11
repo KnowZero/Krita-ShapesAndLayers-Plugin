@@ -1,6 +1,7 @@
 from krita import *
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
 from functools import partial
+import re
 
 class shapesAndLayersShapesAsLayers(DockWidget):
     TOOLACTION_BINDS = [
@@ -12,6 +13,8 @@ class shapesAndLayersShapesAsLayers(DockWidget):
             
         'object_order_back',
         'object_order_front',
+        'object_order_raise',
+        'object_order_lower',
         'object_group',
         'object_ungroup'
     ]
@@ -56,6 +59,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         self.currentDocument = None
         self.currentLayer = None
         self.currentLayerUUID = None
+
         
         #self.centralWidget.listShapes.setColumnWidth(0,10)
         #self.centralWidget.listShapes.setColumnWidth(1,10)
@@ -72,6 +76,8 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         
         self.centralWidget.listShapes.itemClicked.connect(self.shapeLayerClicked)
         self.centralWidget.listShapes.itemSelectionChanged.connect(self.shapeSelectionChanged)
+        self.centralWidget.listShapes.itemDoubleClicked.connect(self.shapeLayerDoubleClicked)
+        self.centralWidget.listShapes.itemChanged.connect(self.shapeLayerItemChanged)
         
         self.centralWidget.editBtn.clicked.connect(self.openEditDialog)
         
@@ -168,10 +174,11 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         self.editMode = status
         self.centralWidget.setEnabled(status)
 
-        
+    def shapeLayerDoubleClicked(self, item, col):
+        self.centralWidget.listShapes.editItem(item, 3)
 
     def shapeLayerClicked(self, item, col):
-        i = item.data(2, 101)
+        i = item.data(3, 101)
         shape = self.shapeListData[i]['shape']
         visible = True if shape.visible() else False
         
@@ -211,7 +218,14 @@ class shapesAndLayersShapesAsLayers(DockWidget):
                 self.reloadShapeLayers()
             else:
                 self.reloadShapeLayers(False)
-            
+    
+    def shapeLayerItemChanged(self,item, col):
+        if col == 3:
+            i = item.data(3, 101)
+            shape = self.shapeListData[i]['shape']
+            shape.setName( item.data(3, 0) )
+        
+    
     def reloadShapeLayers(self, fill = True):
         self.shapeListData = []
         self.selectList = {}
@@ -231,10 +245,13 @@ class shapesAndLayersShapesAsLayers(DockWidget):
 
 
                 item = QTreeWidgetItem(0)
-                item.setText(2, '['+str(depth)+'] '+ (shape.name() or 'SubGroup '+str(depth)+'-'+str(i+1))  )
+                item.setText(2, '['+str(depth)+'] ' )
+                item.setText(3, (shape.name() or 'SubGroup '+str(depth)+'-'+str(i+1))+'*'  )
                 item.setIcon(0, Krita.instance().icon('visible' if shape.visible() else 'novisible' ) )
-                item.setIcon(1, Krita.instance().icon("grouplayer"))
-                item.setData(2, 101, len(self.shapeListData) )
+                item.setIcon(1, Krita.instance().icon("groupLayer"))
+                item.setData(3, 101, len(self.shapeListData) )
+                
+                item.setFlags( Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable )
                
                 if parentItem:
                     parentItem.addChild(item)
@@ -253,10 +270,13 @@ class shapesAndLayersShapesAsLayers(DockWidget):
                 #if self.topLevelGroupDepth > depth: self.topLevelGroupDepth = depth-1
                 
                 item = QTreeWidgetItem(1)
-                item.setText(2, '['+str(depth)+'] '+ (shape.name() or "Shape "+str(i)))
+                item.setText(2, '['+str(depth)+']' )
+                item.setText(3, (shape.name() or "Shape "+str(i)+'*'))
                 item.setIcon(0, Krita.instance().icon('visible' if shape.visible() else 'novisible' ) )
                 item.setIcon(1, Krita.instance().icon("vectorLayer"))
-                item.setData(2, 101, len(self.shapeListData) )
+                item.setData(3, 101, len(self.shapeListData) )
+                
+                item.setFlags( Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable )
 
                 if parentItem:
                     parentItem.addChild(item)
@@ -286,7 +306,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         self.selectList = {}
         
         for item in self.centralWidget.listShapes.selectedItems():
-            i = item.data(2, 101)
+            i = item.data(3, 101)
             if i is not None:
                 shape = self.shapeListData[i]['shape']
                 self.selectList[str(i)]=item
@@ -311,29 +331,55 @@ class shapesAndLayersShapesAsLayers(DockWidget):
     def openEditDialog(self):
         self.editDlg = QDialog()
         
+
+        
+        self.editDlg.resize(1000, 700)
+        
         selected = self.centralWidget.listShapes.selectedItems()
         if len(selected) <= 0: return
         
         layout = QVBoxLayout()
-        #buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
-        #buttonBox.accepted.connect(self.editShape)
-        buttonBox.rejected.connect(self.editDlg.hide)
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        #buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
+        buttonBox.accepted.connect(self.editDlg.accept)
+        buttonBox.rejected.connect(self.editDlg.reject)
         
-        i = selected[0].data(2, 101)
+
+        
+        i = selected[0].data(3, 101)
         shape = self.shapeListData[i]['shape']
         
         textBox = QPlainTextEdit()
-        textBox.setPlainText( shape.toSvg(True,False) )
+        
+        svgContent = shape.toSvg(True,False)
+        svgContent = svgContent.replace('>','>\n').replace('</','\n</').replace('>\n\n</','>\n</')
+        
+        textBox.setPlainText( svgContent )
         
         layout.addWidget(textBox)
         layout.addWidget(buttonBox)
         
         self.editDlg.setLayout(layout)
         
-        self.editDlg.show()
+
+        if self.editDlg.exec() == QDialog.Accepted:
+            currentLayer = self.currentDocument.activeNode()
+            svgHeader = re.compile('(^.*?\<svg.*?["\']\\s*\>).*$', re.DOTALL).sub(r'\1', currentLayer.toSvg())
+            svgContent = svgHeader+textBox.toPlainText()+'</svg>'
+            
+            selected = self.centralWidget.listShapes.selectedItems()
+            i = selected[0].data(3, 101)
+            shape = self.shapeListData[i]['shape']
+            
+            newShapes = currentLayer.addShapesFromSvg(svgContent)
+            
+            if newShapes:
+                shape.remove()
+                for item in newShapes:
+                    item.select()
+                self.reloadShapeLayers()
+            
         
-    def editShape(self):
         self.editDlg.hide()
 
     def canvasChanged(self, canvas):
