@@ -11,32 +11,25 @@ class ShapesAndLayersHideDockWindowTitlebar():
         self.dockerList = {}
         
         self.settings = { 'enabled': 0 } if len(settingsList) < 2 else { settingsList[i]: int(settingsList[i + 1]) for i in range(0, len(settingsList), 2) }
-        
-        self.notify = Krita.instance().notifier()
-        self.notify.setActive(True)
-        self.notify.windowCreated.connect(self.windowCreatedSetup)
 
-    
-    def windowCreatedSetup(self):
-        if self.settings['enabled']:
-            self.action.setChecked(True)
-            self.toggleVisibleTitlebars()
-        
-        
-        
+       
     def onLoad(self, window):
         self.qwin = window.qwindow()
         self.action = window.createAction("shapesAndLayersHideDockWindowTitlebar", "Hide Dock Window Titlebars", "tools/scripts/shapesAndLayers")
         self.action.setCheckable(True)
+        
+        
+        
+        if self.settings['enabled']:
+            self.action.setChecked(True)
+            self.toggleVisibleTitlebars()
+            
         self.action.triggered.connect(self.toggleVisibleTitlebars)
-        
-        
         
 
         
     def toggleVisibleTitlebars(self):
-        dockers = Krita.instance().dockers()
-        
+        dockers = self.qwin.findChildren(QtWidgets.QDockWidget)
         self.settings['enabled']=int(self.action.isChecked())
             
         Krita.instance().writeSetting("", "shapesAndLayersHideDockWindowTitlebar", ','.join("{!s},{!r}".format(k,v) for (k,v) in self.settings.items()) )
@@ -72,7 +65,6 @@ class ShapesAndLayersHideDockWindowTitlebar():
             self.dockerList[id(docker)]['dummy'].setObjectName('DummyTitleBar')
 
         docker.setTitleBarWidget(self.dockerList[id(docker)]['dummy'])
-        docker.update()
         
     
     def toggleVisibility(self, docker):
