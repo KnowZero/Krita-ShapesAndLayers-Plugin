@@ -68,10 +68,11 @@ class ShapesAndLayersHideDockWindowTitlebar():
 
         if not self.dockerList[id(docker)]['dummy']:
             self.dockerList[id(docker)]['dummy'] = QWidget()
-            self.dockerList[id(docker)]['dummy'].setVisible(False)
+            self.dockerList[id(docker)]['dummy'].hide()
             self.dockerList[id(docker)]['dummy'].setObjectName('DummyTitleBar')
 
         docker.setTitleBarWidget(self.dockerList[id(docker)]['dummy'])
+        docker.update()
         
     
     def toggleVisibility(self, docker):
