@@ -317,8 +317,9 @@ class shapesAndLayersShapesAsLayers(DockWidget):
 
     def shapeChanged(self):
         #print ("SHAPE CHANGE!")
-        self.currentDocument.waitForDone()
-        QTimer.singleShot(500, self.reloadShapeLayers)
+        #self.currentDocument.waitForDone()
+        #QTimer.singleShot(500, self.reloadShapeLayers)
+        self.reloadShapeLayers()
         
     def cleanup(self):
         self.currentDocument = None
