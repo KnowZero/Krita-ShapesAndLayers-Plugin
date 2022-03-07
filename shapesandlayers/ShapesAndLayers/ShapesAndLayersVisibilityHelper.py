@@ -4,7 +4,7 @@ import re
 from xml.dom import minidom
 import sip
 
-class ShapesAndLayersVisibilityHelper():
+class ShapesAndLayersVisibilityHelper(QObject):
     def __init__(self, caller, parent = None):
         super().__init__()
         self.caller = caller
@@ -27,7 +27,6 @@ class ShapesAndLayersVisibilityHelper():
         
         self.hoverToggleMode = [False,False,0]
         self.hoverToggleNodes = []
-        self.currentSelection=[]
         
         self.currentLayer = None
 
@@ -167,16 +166,14 @@ class ShapesAndLayersVisibilityHelper():
         if not self.clickEvent: return
 
         if self.hoverToggleMode[0] is True:
-            if idx not in self.currentSelection:
-                self.hoverToggleMode[2]+=1
-                self.currentSelection.append( idx )
-
-            #layerName = idx.data(0)
-            #doc = Krita.instance().activeDocument()
             
-            #node = self.validateNode(doc,layerName, doc.nodeByName(layerName),idx)
-
-            #node.setVisible(self.hoverToggleMode[1])
+            self.hoverToggleMode[2]+=1
+            layerName = idx.data(0)
+            doc = Krita.instance().activeDocument()
+            
+            node = self.validateNode(doc,layerName, doc.nodeByName(layerName),idx)
+            #print ("HOV", self.hoverToggleMode[2], idx.data(0), node.name(), self.hoverToggleMode[1] )
+            node.setVisible(self.hoverToggleMode[1])
             #>self.hoverToggleNodes.append([node])
 
     
@@ -200,26 +197,26 @@ class ShapesAndLayersVisibilityHelper():
         layerVisible = not idx.data( Qt.UserRole + 6 )
 
        
-        if self.settings['boolToggleVisibilityDrag'] and self.clickEvent and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is not layerVisible:
+        if self.settings['boolToggleVisibilityDrag'] and self.clickEvent and self.hoverToggleMode[0] is False and id(idx) in self.layerChanges and self.layerChanges[id(idx)]['visible'] is not layerVisible:
             self.hoverToggleNodes = []
             self.hoverToggleMode = [True, layerVisible, 1]
-            self.currentSelection=[]
             self.layerList.setDragEnabled(False)
             self.layerList.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+            #print ("START", layerName, id(idx))
 
         
-        if self.settings['boolAutoSelectVisibleLayer'] and self.clickEvent and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is False and layerVisible is True:
+        if self.settings['boolAutoSelectVisibleLayer'] and self.clickEvent and self.hoverToggleMode[0] is False and id(idx) in self.layerChanges and self.layerChanges[layerName]['visible'] is False and layerVisible is True:
             doc.setActiveNode( self.validateNode(doc,layerName, doc.nodeByName(layerName),idx) )
 
 
-        if self.settings['boolBlockInvisibileLayer'] and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is not layerVisible:
+        if self.settings['boolBlockInvisibileLayer'] and layerName in self.layerChanges and self.layerChanges[id(idx)]['visible'] is not layerVisible:
             if idx.data( Qt.UserRole + 1 ):
                 self.checkBlockCanvas(layerVisible)
 
 
 
 
-        self.layerChanges[layerName] = { 'visible': layerVisible }
+        self.layerChanges[id(idx)] = { 'visible': layerVisible }
         
         self.layerChanged()
         
@@ -251,8 +248,8 @@ class ShapesAndLayersVisibilityHelper():
         self.layerList.model().sourceModel().modelReset.connect(self.layerModelReset)
         self.layerList.model().sourceModel().rowsRemoved.connect(self.layerRemove)
         
-        self.layerListFilter = self.layerListFilterClass(self)
-        self.layerList.viewport().installEventFilter(self.layerListFilter)
+        #self.layerListFilter = self.layerListFilterClass(self)
+        self.layerList.viewport().installEventFilter(self)
 
 
     def unbindLayerList(self):
@@ -262,38 +259,30 @@ class ShapesAndLayersVisibilityHelper():
         self.layerList.model().sourceModel().modelReset.disconnect(self.layerModelReset)
         self.layerList.model().sourceModel().rowsRemoved.disconnect(self.layerRemove)
         
-        self.layerList.viewport().removeEventFilter(self.layerListFilter)
+        self.layerList.viewport().removeEventFilter(self)
         self.layerListFilter = None
        
         self.enabledBindLayers = False
         
-    class layerListFilterClass(QtWidgets.QTreeView):
-        def __init__(self, caller, parent=None):
-            super().__init__()
-            self.caller = caller
+    #class layerListFilterClass(QtWidgets.QTreeView):
+    #    def __init__(self, caller, parent=None):
+    #        super().__init__()
+    #        self.caller = caller
             
-        def eventFilter(self, obj, event):
-            if event.type() == 2:
-                self.caller.clickEvent = True
-                #print ("PRESS")
-            elif event.type() == 3:
-                if self.caller.layerList.selectionMode() == QtWidgets.QAbstractItemView.SingleSelection:
-                    self.caller.layerList.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-                
-                if self.caller.hoverToggleMode[0] is True and self.caller.hoverToggleMode[2] > 1:
-                    self.caller.layerList.selectionModel().clearSelection()
-                    for idx in self.caller.currentSelection:
-                        #print ("ID", idx.row(), idx.model() )
-                        self.caller.layerList.selectionModel().select( idx , QItemSelectionModel.Select)
-                    Krita.instance().action('toggle_layer_visibility').trigger()
-                    self.caller.layerList.selectionModel().clearSelection()
-                    
-                
-                self.caller.hoverToggleMode = [False, False, 0]
-                self.caller.clickEvent = False
-                if self.caller.layerList.dragEnabled() is False: self.caller.layerList.setDragEnabled(True)
-
-                
-                #print ("RELEASE")
-            return False
-        
+    def eventFilter(self, obj, event):
+        if event.type() == 2:
+            self.clickEvent = True
+            #print ("PRESS")
+        elif event.type() == 3:
+            #print ("AM", self.hoverToggleMode[2], id(self.hoverToggleMode[2]) )
+            if self.hoverToggleMode[0] is True and self.hoverToggleMode[2] > 1:
+                Krita.instance().activeDocument().refreshProjection()
+            
+            self.hoverToggleMode = [False, False, 0]
+            self.clickEvent = False
+            if self.layerList.dragEnabled() is False: self.layerList.setDragEnabled(True)
+            if self.layerList.selectionMode() == QtWidgets.QAbstractItemView.SingleSelection:
+                self.layerList.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            
+            #print ("RELEASE")
+        return False
