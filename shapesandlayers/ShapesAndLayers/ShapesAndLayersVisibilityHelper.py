@@ -25,8 +25,9 @@ class ShapesAndLayersVisibilityHelper():
         
         self.clickEvent = False
         
-        self.hoverToggleMode = [False,False]
+        self.hoverToggleMode = [False,False,0]
         self.hoverToggleNodes = []
+        self.currentSelection=[]
         
         self.currentLayer = None
 
@@ -166,12 +167,16 @@ class ShapesAndLayersVisibilityHelper():
         if not self.clickEvent: return
 
         if self.hoverToggleMode[0] is True:
-            layerName = idx.data(0)
-            doc = Krita.instance().activeDocument()
-            
-            node = self.validateNode(doc,layerName, doc.nodeByName(layerName),idx)
+            if idx not in self.currentSelection:
+                self.hoverToggleMode[2]+=1
+                self.currentSelection.append( idx )
 
-            node.setVisible(self.hoverToggleMode[1])
+            #layerName = idx.data(0)
+            #doc = Krita.instance().activeDocument()
+            
+            #node = self.validateNode(doc,layerName, doc.nodeByName(layerName),idx)
+
+            #node.setVisible(self.hoverToggleMode[1])
             #>self.hoverToggleNodes.append([node])
 
     
@@ -197,7 +202,8 @@ class ShapesAndLayersVisibilityHelper():
        
         if self.settings['boolToggleVisibilityDrag'] and self.clickEvent and layerName in self.layerChanges and self.layerChanges[layerName]['visible'] is not layerVisible:
             self.hoverToggleNodes = []
-            self.hoverToggleMode = [True, layerVisible]
+            self.hoverToggleMode = [True, layerVisible, 1]
+            self.currentSelection=[]
             self.layerList.setDragEnabled(False)
             self.layerList.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
 
@@ -271,14 +277,22 @@ class ShapesAndLayersVisibilityHelper():
                 self.caller.clickEvent = True
                 #print ("PRESS")
             elif event.type() == 3:
-                if self.caller.hoverToggleMode[0] is True:
-                    Krita.instance().activeDocument().refreshProjection()
-                
-                self.caller.hoverToggleMode = [False, False]
-                self.caller.clickEvent = False
-                if self.caller.layerList.dragEnabled() is False: self.caller.layerList.setDragEnabled(True)
                 if self.caller.layerList.selectionMode() == QtWidgets.QAbstractItemView.SingleSelection:
                     self.caller.layerList.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+                
+                if self.caller.hoverToggleMode[0] is True and self.caller.hoverToggleMode[2] > 1:
+                    self.caller.layerList.selectionModel().clearSelection()
+                    for idx in self.caller.currentSelection:
+                        #print ("ID", idx.row(), idx.model() )
+                        self.caller.layerList.selectionModel().select( idx , QItemSelectionModel.Select)
+                    Krita.instance().action('toggle_layer_visibility').trigger()
+                    self.caller.layerList.selectionModel().clearSelection()
+                    
+                
+                self.caller.hoverToggleMode = [False, False, 0]
+                self.caller.clickEvent = False
+                if self.caller.layerList.dragEnabled() is False: self.caller.layerList.setDragEnabled(True)
+
                 
                 #print ("RELEASE")
             return False
