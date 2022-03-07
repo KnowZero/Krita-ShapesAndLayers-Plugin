@@ -163,6 +163,10 @@ class ShapesAndLayersVisibilityHelper(QObject):
         return node
     
     def layerHover(self, idx):
+        lid = str(id(idx)) + idx.data(0)
+        #print ("HOVER", idx.data(0), idx.data(Qt.UserRole + 6))
+        layerVisible = idx.data( Qt.UserRole + 6 ) is False
+        self.layerChanges[lid] = { 'visible': layerVisible }
         if not self.clickEvent: return
 
         if self.hoverToggleMode[0] is True:
@@ -194,29 +198,34 @@ class ShapesAndLayersVisibilityHelper(QObject):
                 self.blockCanvas.deleteLater()
         
         layerName = idx.data(0)
-        layerVisible = not idx.data( Qt.UserRole + 6 )
+        layerVisible = idx.data( Qt.UserRole + 6 ) is False
+        lid = str(id(idx)) + layerName
 
        
-        if self.settings['boolToggleVisibilityDrag'] and self.clickEvent and self.hoverToggleMode[0] is False and id(idx) in self.layerChanges and self.layerChanges[id(idx)]['visible'] is not layerVisible:
+        if self.settings['boolToggleVisibilityDrag'] and self.clickEvent and self.hoverToggleMode[0] is False and lid in self.layerChanges and self.layerChanges[lid]['visible'] is not layerVisible:
             self.hoverToggleNodes = []
             self.hoverToggleMode = [True, layerVisible, 1]
             self.layerList.setDragEnabled(False)
             self.layerList.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-            #print ("START", layerName, id(idx))
+            #print ("START", layerName, lid)
 
-        
-        if self.settings['boolAutoSelectVisibleLayer'] and self.clickEvent and self.hoverToggleMode[0] is False and id(idx) in self.layerChanges and self.layerChanges[layerName]['visible'] is False and layerVisible is True:
-            doc.setActiveNode( self.validateNode(doc,layerName, doc.nodeByName(layerName),idx) )
+        #print ("BL", layerName, lid, self.clickEvent , self.hoverToggleMode[2], lid in self.layerChanges)
+        #if lid in self.layerChanges:
+        #    print ("BL2", self.layerChanges[lid]['visible'] , '->', layerVisible)
+        if self.settings['boolAutoSelectVisibleLayer'] and self.clickEvent and self.hoverToggleMode[2] == 1 and lid in self.layerChanges and self.layerChanges[lid]['visible'] is False and layerVisible is True:
+            anode = self.validateNode(doc,layerName, doc.nodeByName(layerName),idx)
+            #print ("N", layerName, anode.name())
+            doc.setActiveNode( anode )
 
 
-        if self.settings['boolBlockInvisibileLayer'] and layerName in self.layerChanges and self.layerChanges[id(idx)]['visible'] is not layerVisible:
+        if self.settings['boolBlockInvisibileLayer'] and lid in self.layerChanges and self.layerChanges[lid]['visible'] is not layerVisible:
             if idx.data( Qt.UserRole + 1 ):
                 self.checkBlockCanvas(layerVisible)
 
 
 
 
-        self.layerChanges[id(idx)] = { 'visible': layerVisible }
+        self.layerChanges[lid] = { 'visible': layerVisible }
         
         self.layerChanged()
         
@@ -255,6 +264,7 @@ class ShapesAndLayersVisibilityHelper(QObject):
     def unbindLayerList(self):
         if not self.enabledBindLayers: return
         self.layerList.entered.disconnect(self.layerHover)
+        self.layerList.activated.disconnect(self.activatedLayer)
         self.layerList.model().sourceModel().dataChanged.disconnect(self.layerDataChanged)
         self.layerList.model().sourceModel().modelReset.disconnect(self.layerModelReset)
         self.layerList.model().sourceModel().rowsRemoved.disconnect(self.layerRemove)
