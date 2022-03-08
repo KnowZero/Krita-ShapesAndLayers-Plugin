@@ -198,6 +198,7 @@ class ShapesAndLayersVisibilityHelper(QObject):
                 self.blockCanvas.deleteLater()
         
         layerName = idx.data(0)
+        if layerName is None: return
         layerVisible = idx.data( Qt.UserRole + 6 ) is False
         lid = str(id(idx)) + layerName
 
