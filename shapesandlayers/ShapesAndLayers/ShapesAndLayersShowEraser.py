@@ -50,7 +50,11 @@ class ShapesAndLayersShowEraser():
         self.eraserCursorCache = {}
         
         self.defaultEraserCursor = os.path.dirname(os.path.realpath(__file__)) + '/eraser_cursor.svg'
-        self.eraserCursorFile = self.defaultEraserCursor
+  
+        if 'cursorFile' in self.settings and self.settings['cursorFile'] != '':
+            self.eraserCursorFile = self.settings['cursorFile']
+        else:
+            self.eraserCursorFile = self.defaultEraserCursor
         
         self.resetCursorSize()
         
