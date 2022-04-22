@@ -122,6 +122,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         toolButton.toggled.connect(self.toolChanged)
     
     def callAction(self, actionName):
+        #print ("call action", actionName)
         Krita.instance().action(actionName).trigger()
         
     def showContextMenu(self, pos):
@@ -158,7 +159,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         
         if status is True:
             for action in self.TOOLACTION_BINDS:
-                Krita.instance().action(action).triggered.connect(self.shapeChanged)
+                Krita.instance().action(action).triggered.connect(self.actionClicked)
             #self.xSpinBox.installEventFilter(self.xSpinBoxFilter)
             qApp.installEventFilter(self.canvasMouseFilter)
 
@@ -166,13 +167,16 @@ class shapesAndLayersShapesAsLayers(DockWidget):
                 self.reloadShapeLayers()
         else:
             for action in self.TOOLACTION_BINDS:
-                Krita.instance().action(action).triggered.disconnect(self.shapeChanged)
+                Krita.instance().action(action).triggered.disconnect(self.actionClicked)
                 
             #self.xSpinBox.removeEventFilter(self.xSpinBoxFilter)
             qApp.removeEventFilter(self.canvasMouseFilter)
 
         self.editMode = status
         self.centralWidget.setEnabled(status)
+        
+    def actionClicked(self, toggled):
+        QTimer.singleShot(10, self.shapeChanged)
 
     def shapeLayerDoubleClicked(self, item, col):
         self.centralWidget.listShapes.editItem(item, 3)
@@ -408,7 +412,8 @@ class shapesAndLayersShapesAsLayers(DockWidget):
         def eventFilter(self, obj, event):
             if isinstance(obj,QOpenGLWidget):
                 if event.type() == QEvent.MouseButtonRelease:
-                    self.caller.shapeChanged()
+                    QTimer.singleShot(0, self.caller.shapeChanged);
+
                 
             return False
 
