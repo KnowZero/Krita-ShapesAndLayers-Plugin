@@ -284,6 +284,8 @@ class ShapesAndLayersVisibilityHelper(QObject):
         if event.type() == 2:
             self.clickEvent = True
             #print ("PRESS")
+        elif event.type() == 60:
+            self.clickEvent = False
         elif event.type() == 3:
             #print ("AM", self.hoverToggleMode[2], id(self.hoverToggleMode[2]) )
             if self.hoverToggleMode[0] is True and self.hoverToggleMode[2] > 1:
