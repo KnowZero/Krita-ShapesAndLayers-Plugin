@@ -291,8 +291,9 @@ class ShapesAndLayersFontManagerHelper():
                 fontFamily = self.caller.fontDict[self.fontPrivateType][self.fontPath]['families']
 
                 for shape in currentLayer.shapes():
-                    if shape.isSelected and shape.type() == 'KoSvgTextShapeID':
+                    if shape.isSelected() and shape.type() == 'KoSvgTextShapeID':
                         selectedShape = shape
+                        break
                         
             if selectedShape:
                 svgContent = svgHeader+shape.toSvg(True,False)+'</svg>'
@@ -303,8 +304,9 @@ class ShapesAndLayersFontManagerHelper():
                         if subnode.hasAttribute("font-family"):
                             subnode.setAttribute('font-family', fontFamily[0] )
                 
-                shape.remove()
+                selectedShape.remove()
                 shapes = currentLayer.addShapesFromSvg(svgDom.toxml())
+                shapes[0].select()
             else:
                 QMessageBox.warning(Krita.instance().activeWindow().qwindow(), "Error", "No Text Shape is selected to apply")
 
