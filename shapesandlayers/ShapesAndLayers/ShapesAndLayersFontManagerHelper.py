@@ -2,6 +2,8 @@ from krita import *
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
 import os
 import json
+import re
+from xml.dom import minidom
 
 class ShapesAndLayersFontManagerHelper():
     def __init__(self, caller, parent = None):
@@ -113,6 +115,7 @@ class ShapesAndLayersFontManagerHelper():
             self.settings['tempFontDir'] = ''
             
         Krita.instance().writeSetting("", "shapesandlayersFontManagerHelper", json.dumps(self.settings) )
+        self.slotTempFontDirChanged(self.settings['tempFontDir'])
             
             
     def slotWatchTempFontDir(self):
@@ -250,7 +253,7 @@ class ShapesAndLayersFontManagerHelper():
             self.row = QHBoxLayout()
             
             self.viewFont = QPushButton(QIcon.fromTheme('document-print-preview'),"View")
-            
+            self.applyFont = QPushButton(QIcon.fromTheme('format-text-color'),"Apply")
             
             fontDir, fontFileName = os.path.split(self.fontPath)
             
@@ -264,9 +267,11 @@ class ShapesAndLayersFontManagerHelper():
             self.row.addWidget(QLabel( '<b>'+fontFileName+'</b> - '+ ','.join(showFonts) +'<br><font size=1>'+fontDir+'</font>' ), 10)
             self.row.addWidget(QLabel(fontPrivateType), 1)
             self.row.addWidget(self.viewFont,3)
+            self.row.addWidget(self.applyFont,3)
             self.row.addWidget(self.removeFont,3)
             
             self.viewFont.clicked.connect(self.slotViewFont)
+            self.applyFont.clicked.connect(self.slotApplyFont)
             self.removeFont.clicked.connect(self.slotRemoveFont)
 
             self.setLayout(self.row)
@@ -275,7 +280,35 @@ class ShapesAndLayersFontManagerHelper():
             
         def slotViewFont(self):
             QtGui.QDesktopServices.openUrl(QUrl(self.fontPath))
-            
+        
+        def slotApplyFont(self):
+            doc = Krita.instance().activeDocument()
+            currentLayer = doc.activeNode()
+            selectedShape = None
+
+            if currentLayer.type() == 'vectorlayer':
+                svgHeader = re.compile('(^.*?\<svg.*?["\']\\s*\>).*$', re.DOTALL).sub(r'\1', currentLayer.toSvg())
+                fontFamily = self.caller.fontDict[self.fontPrivateType][self.fontPath]['families']
+
+                for shape in currentLayer.shapes():
+                    if shape.isSelected and shape.type() == 'KoSvgTextShapeID':
+                        selectedShape = shape
+                        
+            if selectedShape:
+                svgContent = svgHeader+shape.toSvg(True,False)+'</svg>'
+                svgDom = minidom.parseString(svgContent)
+                for node in svgDom.getElementsByTagName('text'):
+                    node.setAttribute('font-family', fontFamily[0] )
+                    for subnode in node.getElementsByTagName('tspan'):
+                        if subnode.hasAttribute("font-family"):
+                            subnode.setAttribute('font-family', fontFamily[0] )
+                
+                shape.remove()
+                shapes = currentLayer.addShapesFromSvg(svgDom.toxml())
+            else:
+                QMessageBox.warning(Krita.instance().activeWindow().qwindow(), "Error", "No Text Shape is selected to apply")
+
+        
         def slotRemoveFont(self):
             if self.fontPrivateType == 'D' and self.caller.settings['enableWatchTempFontDir'] == 1:
                 reply = QMessageBox.question(Krita.instance().activeWindow().qwindow(), "Confirm", "You are removing a font that belongs to a watched directory, are you sure you wish to permanently delete this font from the directory?", QMessageBox.Yes, QMessageBox.No )
