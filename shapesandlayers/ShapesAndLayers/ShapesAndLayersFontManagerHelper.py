@@ -236,8 +236,10 @@ class ShapesAndLayersFontManagerHelper():
             self.dlg.toggleWatchTempFontDirBtn.clicked.connect(self.slotWatchTempFontDir)
             
             self.dlg.importFontBtn.setEnabled(False)
+            flags = self.dlg.windowFlags()
+            self.dlg.setWindowFlags(flags | Qt.Tool)
 
-        if show: self.dlg.exec_()
+        if show: self.dlg.show()
         return { "status": 1 }        
         
 
@@ -300,10 +302,13 @@ class ShapesAndLayersFontManagerHelper():
                 svgDom = minidom.parseString(svgContent)
                 for node in svgDom.getElementsByTagName('text'):
                     node.setAttribute('font-family', fontFamily[0] )
+                    node.setAttribute('style',re.sub('font-family:.*?(;|$)','font-family: '+fontFamily[0]+';',node.getAttribute("style") )  )
                     for subnode in node.getElementsByTagName('tspan'):
                         if subnode.hasAttribute("font-family"):
                             subnode.setAttribute('font-family', fontFamily[0] )
-                
+                        if subnode.hasAttribute("style"):
+                            subnode.setAttribute('style',re.sub('font-family:.*?(;|$)','font-family: '+fontFamily[0]+';',subnode.getAttribute("style") )  )
+
                 selectedShape.remove()
                 shapes = currentLayer.addShapesFromSvg(svgDom.toxml())
                 shapes[0].select()
