@@ -311,6 +311,7 @@ class ShapesAndLayersFontManagerHelper():
 
                 selectedShape.remove()
                 shapes = currentLayer.addShapesFromSvg(svgDom.toxml())
+                doc.refreshProjection()
                 shapes[0].select()
             else:
                 QMessageBox.warning(Krita.instance().activeWindow().qwindow(), "Error", "No Text Shape is selected to apply")
