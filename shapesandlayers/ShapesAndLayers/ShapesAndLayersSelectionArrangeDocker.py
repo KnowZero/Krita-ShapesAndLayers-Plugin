@@ -33,7 +33,7 @@ class shapesAndLayersSelectionArrangeDocker(DockWidget):
             
             self.clearNode(node)
             nodeBounds = self.cacheNodeBounds
-            node.setPixelData(self.pixelData, nodeBounds.x(), nodeBounds.y(), nodeBounds.width(), nodeBounds.height())
+            node.setPixelData(self.pixelData, int(nodeBounds.x()), int(nodeBounds.y()), int(nodeBounds.width()), int(nodeBounds.height()))
             self.pixelData = None
             self.centralWidget.selArrangeUndoBtn.setEnabled(False)
             doc.refreshProjection()
@@ -41,7 +41,7 @@ class shapesAndLayersSelectionArrangeDocker(DockWidget):
     def clearNode(self, node):
         nodeBounds = node.bounds()
         pcount = int(int(node.colorDepth().replace('F','').replace('U','')) / 2)
-        node.setPixelData( (b'\x00' * (pcount * nodeBounds.width() * nodeBounds.height()) ), nodeBounds.x(), nodeBounds.y(), nodeBounds.width(), nodeBounds.height())
+        node.setPixelData( (b'\x00' * int(pcount * nodeBounds.width() * nodeBounds.height()) ), int(nodeBounds.x()), int(nodeBounds.y()), int(nodeBounds.width()), int(nodeBounds.height()))
         
     def adjustToPosition(self, loc):
         doc = Krita.instance().activeDocument()
@@ -82,7 +82,7 @@ class shapesAndLayersSelectionArrangeDocker(DockWidget):
             self.clearNode(node)
             
             
-            node.setPixelData(self.pixelData, nodeBounds.x() + xDiff, nodeBounds.y() + yDiff, nodeBounds.width(), nodeBounds.height())
+            node.setPixelData(self.pixelData, int(nodeBounds.x() + xDiff), int(nodeBounds.y() + yDiff), int(nodeBounds.width()), int(nodeBounds.height()))
             self.centralWidget.selArrangeUndoBtn.setEnabled(True)
             
             doc.refreshProjection()
