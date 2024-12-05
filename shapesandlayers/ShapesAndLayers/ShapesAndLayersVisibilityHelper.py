@@ -293,6 +293,7 @@ class ShapesAndLayersVisibilityHelper(QObject):
             
             self.hoverToggleMode = [False, False, 0]
             self.clickEvent = False
+            self.layerChanges = {}
             if self.layerList.dragEnabled() is False: self.layerList.setDragEnabled(True)
             if self.layerList.selectionMode() == QtWidgets.QAbstractItemView.SingleSelection:
                 self.layerList.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
