@@ -118,8 +118,10 @@ class shapesAndLayersShapesAsLayers(DockWidget):
 
         
         toolBox = self.qwin.findChild(QtWidgets.QDockWidget, "ToolBox")
-        toolButton = self.qwin.findChild(QtWidgets.QToolButton, "InteractionTool")
-        toolButton.toggled.connect(self.toolChanged)
+        self.interactionToolButton = toolBox.findChild(QtWidgets.QToolButton, "InteractionTool")
+        self.interactionToolButton.toggled.connect(self.toolChanged)
+        self.pathToolButton = toolBox.findChild(QtWidgets.QToolButton, "PathTool")
+        self.pathToolButton.toggled.connect(self.toolChanged)
     
     def callAction(self, actionName):
         #print ("call action", actionName)
@@ -296,7 +298,7 @@ class shapesAndLayersShapesAsLayers(DockWidget):
 
     def shapeSelectionChanged(self):
         if self.blockSelect is True: return
-        if not Krita.instance().action('InteractionTool').isChecked():
+        if not self.interactionToolButton.isChecked() and not self.pathToolButton.isChecked():
             #print ("TRIGGER!")
             Krita.instance().action('InteractionTool').trigger()
         
