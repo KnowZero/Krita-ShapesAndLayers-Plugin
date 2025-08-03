@@ -31,7 +31,7 @@ class ShapesAndLayers(Extension):
             menu = QtWidgets.QMenu("shapesAndLayers", window.qwindow())
             action2.setMenu(menu)
         
-            subaction1 = window.createAction("shapesAndLayersFontAdjust", "Adjust Font Sizes...", "tools/scripts/shapesAndLayers")
+            subaction1 = window.createAction("shapesAndLayersFontAdjust", "Adjust Font Sizes/Replace Font Family...", "tools/scripts/shapesAndLayers")
             subaction1.triggered.connect(self.slotFontAdjust)
 
             self.visibilityHelper.onLoad(window)

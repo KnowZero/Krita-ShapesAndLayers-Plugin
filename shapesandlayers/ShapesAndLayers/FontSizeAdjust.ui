@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>571</width>
     <height>341</height>
    </rect>
   </property>
@@ -24,9 +24,6 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="6">
-    <widget class="QListWidget" name="listTextItems"/>
-   </item>
    <item row="3" column="0" colspan="6">
     <widget class="QLabel" name="lblFontAdjustStatus">
      <property name="text">
@@ -34,8 +31,34 @@
      </property>
     </widget>
    </item>
+   <item row="2" column="0" colspan="6">
+    <widget class="QListWidget" name="listTextItems"/>
+   </item>
+   <item row="0" column="5">
+    <widget class="QPushButton" name="btnToggleCheckAll">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Select All</string>
+     </property>
+     <property name="text">
+      <string>Select All</string>
+     </property>
+     <property name="icon">
+      <iconset theme="select-all">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="5">
     <widget class="QPushButton" name="btnFontAdjustRunProcess">
+     <property name="toolTip">
+      <string>Start</string>
+     </property>
      <property name="text">
       <string>Start</string>
      </property>
@@ -45,82 +68,79 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="btnToggleCheckAll">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset theme="select-all">
-       <normaloff>.</normaloff>.</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="cmbFontAdjustOperator">
+   <item row="0" column="0" rowspan="2" colspan="5">
+    <widget class="QTabWidget" name="tabRunProcess">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <item>
-      <property name="text">
-       <string>Adding</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Dividing</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Multiplying</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Subtracting</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Setting exactly to</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QDoubleSpinBox" name="floatAdjustFontAmount">
-     <property name="decimals">
-      <number>6</number>
-     </property>
-     <property name="minimum">
-      <double>0.000001000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.010000000000000</double>
-     </property>
-     <property name="value">
-      <double>0.750000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="label_2">
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Adjust font size by:</string>
-     </property>
+     <widget class="QWidget" name="tabSizeAdjust">
+      <attribute name="title">
+       <string>Adjust Font Size By:</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QComboBox" name="cmbFontAdjustOperator">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>Adding</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Dividing</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Multiplying</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Subtracting</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Setting exactly to</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="floatAdjustFontAmount">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>0.000001000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="value">
+          <double>0.750000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabFontFamily">
+      <attribute name="title">
+       <string>Replace Font Family</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QComboBox" name="cmbOldFontFamily"/>
+       </item>
+       <item>
+        <widget class="QFontComboBox" name="cmbNewFontFamily"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
