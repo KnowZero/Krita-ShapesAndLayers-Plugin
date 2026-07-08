@@ -1,5 +1,8 @@
 from krita import *
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+try:
+    from PyQt6 import QtCore, QtGui, QtWidgets, uic
+except ImportError:
+    from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import json
 
 class ShapesAndLayersShowEraser():

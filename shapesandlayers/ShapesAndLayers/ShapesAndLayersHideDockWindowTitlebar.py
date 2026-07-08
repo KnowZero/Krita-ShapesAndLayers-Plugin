@@ -1,5 +1,8 @@
 from krita import *
-from PyQt5 import QtCore, QtGui, QtWidgets
+try:
+    from PyQt6 import QtCore, QtGui, QtWidgets
+except ImportError:
+    from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class ShapesAndLayersHideDockWindowTitlebar():

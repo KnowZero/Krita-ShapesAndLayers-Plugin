@@ -1,7 +1,14 @@
 from krita import *
-from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
+try:
+    from PyQt6 import QtCore, QtGui, QtWidgets, QtSvg, uic
+    from PyQt6.QtOpenGLWidgets import QOpenGLWidget
+except ImportError:
+    from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
+    from PyQt5.QtWidgets import QOpenGLWidget
 from functools import partial
 import re
+
+qApp = QtWidgets.QApplication.instance()
 
 class shapesAndLayersShapesAsLayers(DockWidget):
     TOOLACTION_BINDS = [
@@ -423,5 +430,3 @@ class shapesAndLayersShapesAsLayers(DockWidget):
 
                 
             return False
-
-Krita.instance().addDockWidgetFactory(DockWidgetFactory("shapesAndLayersShapesAsLayers", DockWidgetFactoryBase.DockRight, shapesAndLayersShapesAsLayers)) 

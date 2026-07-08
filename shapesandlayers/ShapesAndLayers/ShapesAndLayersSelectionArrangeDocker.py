@@ -1,5 +1,8 @@
 from krita import *
-from PyQt5 import uic
+try:
+    from PyQt6 import uic
+except ImportError:
+    from PyQt5 import uic
 
 
 class shapesAndLayersSelectionArrangeDocker(DockWidget):
@@ -88,4 +91,3 @@ class shapesAndLayersSelectionArrangeDocker(DockWidget):
             doc.refreshProjection()
 
     
-Krita.instance().addDockWidgetFactory(DockWidgetFactory("shapesAndLayersSelectionArrangeDocker", DockWidgetFactoryBase.DockRight, shapesAndLayersSelectionArrangeDocker)) 

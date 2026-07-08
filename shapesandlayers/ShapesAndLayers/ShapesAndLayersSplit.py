@@ -1,5 +1,8 @@
 from krita import *
-from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
+try:
+    from PyQt6 import QtCore, QtGui, QtWidgets, QtSvg, uic
+except ImportError:
+    from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
 import re
 from xml.dom import minidom
 

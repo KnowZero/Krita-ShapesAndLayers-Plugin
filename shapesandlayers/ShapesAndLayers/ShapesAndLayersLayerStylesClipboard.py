@@ -1,5 +1,8 @@
 from krita import *
-from PyQt5 import QtWidgets
+try:
+    from PyQt6 import QtWidgets
+except ImportError:
+    from PyQt5 import QtWidgets
 
 class ShapesAndLayersLayerStylesClipboard():
     def __init__(self, caller, parent = None):
@@ -83,4 +86,3 @@ class ShapesAndLayersLayerStylesClipboard():
         node = doc.activeNode()
         
         node.setLayerStyleFromAsl('<asl><node type="Descriptor" name="" classId="null"></node></asl>')
-

@@ -1,5 +1,8 @@
 from krita import *
-from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
+try:
+    from PyQt6 import QtCore, QtGui, QtWidgets, QtSvg, uic
+except ImportError:
+    from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg, uic
 import os
 import json
 import re
@@ -330,4 +333,3 @@ class ShapesAndLayersFontManagerHelper():
                 self.caller.updateFontList()
             else:
                 QMessageBox.warning(Krita.instance().activeWindow().qwindow(), "Error", "Failed to remove font: "+font)
-
